@@ -39,7 +39,7 @@ ol{padding-left:1.3em}li{margin:4px 0}
 </style></head>
 <body>
 <h1>スライド管理画面</h1>
-<div class="sub">目次に出すスライド・ページの表示／非表示と、表記（題名・説明）を変えられます。変更したら下の「保存して公開」を押してください。生徒の画面には1〜2分ほどで反映されます。</div>
+<div class="sub">学年ページに出すスライド・ページの表示／非表示と、表記（題名・説明）を変えられます。変更したら下の「保存して公開」を押してください。生徒の画面には1〜2分ほどで反映されます。</div>
 
 <div class="box" id="keybox">
   <h2>合い言葉（GitHub のトークン）</h2>
@@ -58,13 +58,14 @@ ol{padding-left:1.3em}li{margin:4px 0}
 </div>
 
 <div class="box">
-  <h2>目次のタイトル</h2>
-  <div class="fields" style="margin-top:8px"><span class="lb">タイトル</span><input type="text" id="st"><span class="lb">説明（なくてもよい）</span><input type="text" id="sn"></div>
+  <h2>学年ページ（生徒に配るリンク）</h2>
+  <div class="sub">学年ごとに別のリンクです。各単元をどの学年に出すかは、下の単元の「学年」で選びます。</div>
+  <div id="grades"></div>
 </div>
 
 <div id="units"></div>
 
-<div class="bar"><span id="msg"></span><button class="pri" id="save">保存して公開</button><a href="./" target="_blank" rel="noopener">目次を開く</a></div>
+<div class="bar"><span id="msg"></span><button class="pri" id="save">保存して公開</button></div>
 
 <script>
 var OWNER='kitaba417',REPO='math-slides',FILE='config.json',API='https://api.github.com/repos/'+OWNER+'/'+REPO+'/contents/'+FILE;
@@ -124,8 +125,18 @@ function deckRow(list,idx,key,isUnitDeck){
 }
 
 function render(){
-  $('#st').value=cfg.site_title||'';$('#sn').value=cfg.site_note||'';
-  $('#st').oninput=function(){cfg.site_title=this.value;setDirty(true)};$('#sn').oninput=function(){cfg.site_note=this.value;setDirty(true)};
+  var GR=$('#grades');GR.innerHTML='';
+  (cfg.grades||[]).forEach(function(g){
+    var row=document.createElement('div');row.className='row'+(g.show===false?' off':'');
+    row.appendChild(sw(g.show!==false,function(v){g.show=v;row.classList.toggle('off',!v);setDirty(true)}));
+    var f=document.createElement('div');f.className='fields';
+    var url=new URL(g.path,location.href).href;
+    var lk=document.createElement('div');lk.innerHTML='<b>'+esc(g.id)+'</b>　<a href="'+esc(url)+'" target="_blank" rel="noopener">'+esc(url)+'</a>';f.appendChild(lk);
+    f.appendChild(field('ページの見出し',g.title,function(v){g.title=v}));f.appendChild(field('案内文（なくてもよい）',g.note,function(v){g.note=v}));
+    row.appendChild(f);
+    var ops=document.createElement('div');ops.className='ops';var cp=document.createElement('button');cp.className='sm';cp.textContent='リンクをコピー';
+    cp.onclick=function(){(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){cp.textContent='コピーしました'},function(){prompt('このリンクをコピーしてください',url)})};
+    ops.appendChild(cp);row.appendChild(ops);GR.appendChild(row)});
   var U=$('#units');U.innerHTML='';
   (cfg.units||[]).forEach(function(u,ui){
     var b=document.createElement('div');b.className='box unit'+(u.show===false?' off':'');
@@ -134,6 +145,10 @@ function render(){
     var f=document.createElement('div');f.className='fields';
     f.appendChild(field('単元名（目次に出る名前）',u.title,function(v){u.title=v}));f.appendChild(field('説明（なくてもよい）',u.sub,function(v){u.sub=v}));
     if(u.decks)f.appendChild(field('単元ページの案内文（なくてもよい）',u.note,function(v){u.note=v}));
+    var gl=document.createElement('span');gl.className='lb';gl.textContent='学年（どの学年ページに出すか）';f.appendChild(gl);
+    var gs=document.createElement('select');gs.style.cssText='font:inherit;padding:5px;max-width:12em';
+    gs.innerHTML='<option value="">（どこにも出さない）</option>'+(cfg.grades||[]).map(function(g){return '<option'+(g.id===u.grade?' selected':'')+'>'+esc(g.id)+'</option>'}).join('');
+    gs.onchange=function(){u.grade=gs.value;setDirty(true)};f.appendChild(gs);
     head.appendChild(f);
     var ops=document.createElement('div');ops.className='ops';
     var up=document.createElement('button');up.className='sm';up.textContent='↑';up.onclick=function(){if(ui>0){cfg.units.splice(ui-1,0,cfg.units.splice(ui,1)[0]);setDirty(true);render()}};

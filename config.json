@@ -1,6 +1,5 @@
 {
  "site_title": "数学 授業スライド",
- "site_note": "",
  "units": [
   {
    "path": "ichiji/",
@@ -93,14 +92,32 @@
      "hide": []
     }
    ],
-   "note": "クリック・タップ・→ で進む ／ ← ・左端タップ・右スワイプ・右下の ◀ で戻る"
+   "note": "クリック・タップ・→ で進む ／ ← ・左端タップ・右スワイプ・右下の ◀ で戻る",
+   "grade": "中1"
   },
   {
    "path": "sanheiho/",
    "title": "三平方の定理の利用（問題 254〜269 解説）",
-   "sub": "",
+   "sub": "質問対応",
    "show": true,
-   "hide": []
+   "hide": [],
+   "grade": "中3"
+  }
+ ],
+ "grades": [
+  {
+   "id": "中1",
+   "path": "chu1-ebe0ce/",
+   "title": "中1　授業スライド",
+   "note": "",
+   "show": true
+  },
+  {
+   "id": "中3",
+   "path": "chu3-26e6b9/",
+   "title": "中3　授業スライド",
+   "note": "",
+   "show": true
   }
  ]
 }
