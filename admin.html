@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>スライド管理画面</title>
+<style>
+:root{--g:#14682C;--bd:#ded7c6;--sub:#5C594F;--off:#b8b2a3}
+body{font-family:"Hiragino Sans","Yu Gothic",sans-serif;background:#F6F3EA;color:#232323;max-width:860px;margin:24px auto 120px;padding:0 16px;font-size:16px}
+h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:0}
+.box{background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px 16px;margin:14px 0}
+.sub{color:var(--sub);font-size:14px}
+input[type=text],input[type=password]{font:inherit;padding:6px 8px;border:1px solid #c9c1ad;border-radius:5px;width:100%;box-sizing:border-box}
+button{white-space:nowrap;font:inherit;padding:6px 12px;border-radius:6px;border:1px solid #c9c1ad;background:#fff;cursor:pointer}
+button.pri{background:var(--g);color:#fff;border-color:var(--g);font-weight:700;padding:10px 22px}
+button.sm{padding:3px 9px;font-size:14px}
+.unit{border-left:5px solid var(--g)}
+.unit.off{border-left-color:var(--off)}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;padding:10px 0;border-top:1px dashed var(--bd)}
+.row:first-of-type{border-top:none}
+.row.off .fields{opacity:.45}
+.fields{display:grid;gap:5px}
+.fields .lb{font-size:12px;color:var(--sub)}
+.ops{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.sw{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;white-space:nowrap;font-weight:700}
+.sw input{display:none}
+.sw i{width:44px;height:24px;border-radius:12px;background:var(--off);position:relative;transition:.15s}
+.sw i:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+.sw input:checked+i{background:var(--g)}.sw input:checked+i:after{left:23px}
+.sw b{font-size:13px;width:3.2em}
+.pages{grid-column:1/-1;background:#faf8f2;border:1px solid var(--bd);border-radius:6px;padding:8px 10px;display:none}
+.pages.open{display:block}
+.pages label{display:flex;gap:8px;align-items:center;padding:3px 0;font-size:15px;cursor:pointer}
+.pages label.h{color:var(--off);text-decoration:line-through}
+.pages .n{font-variant-numeric:tabular-nums;color:var(--sub);width:2.2em;text-align:right}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fffdf7;border-top:1px solid var(--bd);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+#msg{font-size:15px}#msg.err{color:#c62828}#msg.ok{color:var(--g)}
+details summary{cursor:pointer;font-weight:700}
+ol{padding-left:1.3em}li{margin:4px 0}
+.dirty{color:#c62828;font-weight:700}
+</style></head>
+<body>
+<h1>スライド管理画面</h1>
+<div class="sub">目次に出すスライド・ページの表示／非表示と、表記（題名・説明）を変えられます。変更したら下の「保存して公開」を押してください。生徒の画面には1〜2分ほどで反映されます。</div>
+
+<div class="box" id="keybox">
+  <h2>合い言葉（GitHub のトークン）</h2>
+  <div class="sub" id="keystate"></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><input type="password" id="tok" placeholder="github_pat_ で始まる文字列を貼り付け"><button id="tokset">登録</button><button id="tokdel" class="sm">消す</button></div>
+  <details style="margin-top:10px"><summary>トークンの作り方（最初の1回だけ）</summary>
+  <ol>
+    <li>GitHub にログインした状態で <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">トークン作成ページ</a> を開く。</li>
+    <li>Token name に「スライド管理」など好きな名前、Expiration（有効期限）は 1 年など長めを選ぶ。</li>
+    <li>Repository access で <b>Only select repositories</b> を選び、<b>math-slides</b> を選ぶ。</li>
+    <li>Permissions の <b>Contents</b> を <b>Read and write</b> にする。</li>
+    <li>一番下の <b>Generate token</b> を押し、表示された文字列（github_pat_…）をコピーして上の欄に貼り、「登録」。</li>
+  </ol>
+  <div class="sub">トークンはこのブラウザの中だけに保存され、ほかの人には見えません。別の端末で管理するときは、その端末でもう一度登録してください。</div>
+  </details>
+</div>
+
+<div class="box">
+  <h2>目次のタイトル</h2>
+  <div class="fields" style="margin-top:8px"><span class="lb">タイトル</span><input type="text" id="st"><span class="lb">説明（なくてもよい）</span><input type="text" id="sn"></div>
+</div>
+
+<div id="units"></div>
+
+<div class="bar"><span id="msg"></span><button class="pri" id="save">保存して公開</button><a href="./" target="_blank" rel="noopener">目次を開く</a></div>
+
+<script>
+var OWNER='kitaba417',REPO='math-slides',FILE='config.json',API='https://api.github.com/repos/'+OWNER+'/'+REPO+'/contents/'+FILE;
+var cfg=null,sha=null,man={},dirty=false,opened={};
+function $(q){return document.querySelector(q)}
+function tok(){try{return localStorage.getItem('slideAdminToken')||''}catch(e){return''}}
+function msg(t,cl){var m=$('#msg');m.textContent=t;m.className=cl||''}
+function setDirty(v){dirty=v;if(v)msg('未保存の変更があります','dirty')}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function b64dec(s){var b=atob(s.replace(/\n/g,'')),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return new TextDecoder().decode(a)}
+function b64enc(s){var a=new TextEncoder().encode(s),b='';for(var i=0;i<a.length;i+=8192)b+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(b)}
+function keyState(){$('#keystate').innerHTML=tok()?'✓ 登録済み（保存できます）':'<span class="dirty">未登録</span>：見ることはできますが、保存するには登録が必要です。'}
+$('#tokset').onclick=function(){var v=$('#tok').value.trim();if(!v)return;try{localStorage.setItem('slideAdminToken',v)}catch(e){alertless('このブラウザでは保存できませんでした')}$('#tok').value='';keyState();load()};
+$('#tokdel').onclick=function(){try{localStorage.removeItem('slideAdminToken')}catch(e){}keyState()};
+function alertless(t){msg(t,'err')}
+
+function sw(on,cb){var l=document.createElement('label');l.className='sw';l.innerHTML='<input type="checkbox"'+(on?' checked':'')+'><i></i><b>'+(on?'表示':'非表示')+'</b>';
+  var i=l.querySelector('input');i.onchange=function(){l.querySelector('b').textContent=i.checked?'表示':'非表示';cb(i.checked)};return l}
+function field(lb,val,cb){var f=document.createDocumentFragment(),s=document.createElement('span');s.className='lb';s.textContent=lb;var i=document.createElement('input');i.type='text';i.value=val||'';i.oninput=function(){cb(i.value);setDirty(true)};f.appendChild(s);f.appendChild(i);return f}
+
+function deckRow(list,idx,key,isUnitDeck){
+  var d=list[idx],row=document.createElement('div');row.className='row'+(d.show===false?' off':'');
+  row.appendChild(sw(d.show!==false,function(v){d.show=v;row.classList.toggle('off',!v);setDirty(true)}));
+  var f=document.createElement('div');f.className='fields';
+  f.appendChild(field('題名',d.title,function(v){d.title=v}));f.appendChild(field('説明（なくてもよい）',d.sub,function(v){d.sub=v}));row.appendChild(f);
+  var ops=document.createElement('div');ops.className='ops';
+  var slides=man[key]||[];d.hide=d.hide||[];
+  var pb=document.createElement('button');pb.className='sm';
+  function pbText(){pb.textContent='ページ（'+(slides.length-d.hide.filter(function(n){return n<=slides.length}).length)+'/'+slides.length+'）'}
+  pbText();ops.appendChild(pb);
+  var pv=document.createElement('a');pv.href=key+'?preview';pv.target='_blank';pv.rel='noopener';pv.textContent='確認';pv.className='sm';pv.style.alignSelf='center';ops.appendChild(pv);
+  if(!isUnitDeck){
+    var up=document.createElement('button');up.className='sm';up.textContent='↑';up.title='上へ';up.onclick=function(){if(idx>0){list.splice(idx-1,0,list.splice(idx,1)[0]);setDirty(true);render()}};
+    var dn=document.createElement('button');dn.className='sm';dn.textContent='↓';dn.title='下へ';dn.onclick=function(){if(idx<list.length-1){list.splice(idx+1,0,list.splice(idx,1)[0]);setDirty(true);render()}};
+    ops.appendChild(up);ops.appendChild(dn);
+  }
+  row.appendChild(ops);
+  var pg=document.createElement('div');pg.className='pages'+(opened[key]?' open':'');
+  var tools=document.createElement('div');tools.style.cssText='display:flex;gap:6px;margin-bottom:6px';
+  var all=document.createElement('button');all.className='sm';all.textContent='全部表示';
+  var none=document.createElement('button');none.className='sm';none.textContent='全部非表示';
+  tools.appendChild(all);tools.appendChild(none);
+  var note=document.createElement('span');note.className='sub';note.style.alignSelf='center';note.textContent='チェックを外したページは生徒に見えません（ページ番号も詰めて表示されます）';tools.appendChild(note);
+  pg.appendChild(tools);
+  var boxes=[];
+  slides.forEach(function(t,j){var n=j+1,l=document.createElement('label'),h=d.hide.indexOf(n)>=0;l.className=h?'h':'';
+    l.innerHTML='<input type="checkbox"'+(h?'':' checked')+'><span class="n">'+String(n).padStart(2,'0')+'</span><span>'+esc(t||'（題名なし）')+'</span>';
+    var c=l.querySelector('input');boxes.push(c);
+    c.onchange=function(){var k=d.hide.indexOf(n);if(c.checked){if(k>=0)d.hide.splice(k,1)}else if(k<0)d.hide.push(n);d.hide.sort(function(a,b){return a-b});l.className=c.checked?'':'h';pbText();setDirty(true)};
+    pg.appendChild(l)});
+  if(!slides.length)pg.appendChild(document.createTextNode('ページ一覧がありません'));
+  all.onclick=function(){d.hide=[];boxes.forEach(function(c){c.checked=true;c.parentNode.className=''});pbText();setDirty(true)};
+  none.onclick=function(){d.hide=slides.map(function(_,j){return j+1});boxes.forEach(function(c){c.checked=false;c.parentNode.className='h'});pbText();setDirty(true)};
+  pb.onclick=function(){opened[key]=!opened[key];pg.classList.toggle('open',!!opened[key])};
+  row.appendChild(pg);
+  return row;
+}
+
+function render(){
+  $('#st').value=cfg.site_title||'';$('#sn').value=cfg.site_note||'';
+  $('#st').oninput=function(){cfg.site_title=this.value;setDirty(true)};$('#sn').oninput=function(){cfg.site_note=this.value;setDirty(true)};
+  var U=$('#units');U.innerHTML='';
+  (cfg.units||[]).forEach(function(u,ui){
+    var b=document.createElement('div');b.className='box unit'+(u.show===false?' off':'');
+    var head=document.createElement('div');head.className='row';head.style.borderTop='none';
+    head.appendChild(sw(u.show!==false,function(v){u.show=v;b.classList.toggle('off',!v);setDirty(true)}));
+    var f=document.createElement('div');f.className='fields';
+    f.appendChild(field('単元名（目次に出る名前）',u.title,function(v){u.title=v}));f.appendChild(field('説明（なくてもよい）',u.sub,function(v){u.sub=v}));
+    if(u.decks)f.appendChild(field('単元ページの案内文（なくてもよい）',u.note,function(v){u.note=v}));
+    head.appendChild(f);
+    var ops=document.createElement('div');ops.className='ops';
+    var up=document.createElement('button');up.className='sm';up.textContent='↑';up.onclick=function(){if(ui>0){cfg.units.splice(ui-1,0,cfg.units.splice(ui,1)[0]);setDirty(true);render()}};
+    var dn=document.createElement('button');dn.className='sm';dn.textContent='↓';dn.onclick=function(){if(ui<cfg.units.length-1){cfg.units.splice(ui+1,0,cfg.units.splice(ui,1)[0]);setDirty(true);render()}};
+    ops.appendChild(up);ops.appendChild(dn);head.appendChild(ops);b.appendChild(head);
+    if(u.decks){
+      var t=document.createElement('div');t.className='sub';t.style.margin='4px 0 0';t.textContent='この単元のスライド';b.appendChild(t);
+      u.decks.forEach(function(d,di){b.appendChild(deckRow(u.decks,di,u.path+d.path,false))});
+    }else{
+      var r=deckRow([u],0,u.path,true);r.children[0].style.visibility='hidden';r.children[1].style.display='none';b.appendChild(r);
+    }
+    U.appendChild(b)});
+}
+
+function load(){
+  msg('読み込み中…');
+  var mp=fetch('manifest.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(m){man=m}).catch(function(){man={}});
+  var cp;
+  if(tok()){cp=fetch(API+'?ref=main&t='+Date.now(),{headers:{Authorization:'Bearer '+tok(),Accept:'application/vnd.github+json'},cache:'no-store'})
+      .then(function(r){if(r.status===401)throw new Error('トークンが正しくないか、期限切れです');if(!r.ok)throw new Error('読み込めませんでした（'+r.status+'）');return r.json()})
+      .then(function(j){sha=j.sha;cfg=JSON.parse(b64dec(j.content))});}
+  else cp=fetch('config.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){cfg=j;sha=null});
+  Promise.all([mp,cp]).then(function(){render();dirty=false;msg(tok()?'最新の状態を読み込みました':'トークン未登録のため、保存はできません')}).catch(function(e){msg(e.message,'err')});
+}
+
+$('#save').onclick=function(){
+  if(!cfg)return;if(!tok()){msg('保存するには、上でトークンを登録してください','err');$('#keybox').scrollIntoView({behavior:'smooth'});return}
+  msg('保存中…');var body={message:'管理画面から目次・表示設定を更新',content:b64enc(JSON.stringify(cfg,null,1)+'\n'),branch:'main'};if(sha)body.sha=sha;
+  fetch(API,{method:'PUT',headers:{Authorization:'Bearer '+tok(),Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)})
+  .then(function(r){return r.json().then(function(j){return[r,j]})}).then(function(x){var r=x[0],j=x[1];
+    if(r.status===409){msg('ほかの場所で先に変更されていました。ページを再読み込みしてからやり直してください','err');return}
+    if(r.status===401||r.status===403){msg('保存できませんでした。トークンの権限（math-slides の Contents: Read and write）を確認してください','err');return}
+    if(!r.ok){msg('保存できませんでした（'+r.status+' '+(j.message||'')+'）','err');return}
+    sha=j.content.sha;dirty=false;msg('保存しました。1〜2分で生徒の画面に反映されます','ok')}).catch(function(e){msg('保存できませんでした：'+e.message,'err')});
+};
+addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
+keyState();load();
+</script>
+</body></html>

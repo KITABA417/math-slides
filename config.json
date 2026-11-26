@@ -1,0 +1,106 @@
+{
+ "site_title": "数学 授業スライド",
+ "site_note": "",
+ "units": [
+  {
+   "path": "ichiji/",
+   "title": "中1　1次関数",
+   "sub": "1次関数とは 〜 図形と面積",
+   "show": true,
+   "decks": [
+    {
+     "path": "01/",
+     "title": "① 1次関数とは",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "02/",
+     "title": "② 変化の割合",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "02b/",
+     "title": "② 補助　身近な例で考える変化の割合",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "03/",
+     "title": "③ 1次関数のグラフ①",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "04/",
+     "title": "④ 1次関数のグラフ②",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "05/",
+     "title": "⑤ 1次関数の式を求める①",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "06/",
+     "title": "⑥ 1次関数の式を求める②",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "07/",
+     "title": "⑦ 2点から式を求める・1次関数と方程式",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "08/",
+     "title": "⑧ 1次関数の利用（P164〜167）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "09/",
+     "title": "⑨ 3直線でできる三角形の面積（P168）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "10/",
+     "title": "⑩ 面積を2等分する直線（P169〜171）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "11/",
+     "title": "⑪ 正方形と文字 t（P171・172）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    }
+   ],
+   "note": "クリック・タップ・→ で進む ／ ← ・左端タップ・右スワイプ・右下の ◀ で戻る"
+  },
+  {
+   "path": "sanheiho/",
+   "title": "三平方の定理の利用（問題 254〜269 解説）",
+   "sub": "",
+   "show": true,
+   "hide": []
+  }
+ ]
+}
