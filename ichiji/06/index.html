@@ -318,13 +318,13 @@ svg:not(.pending) .rc{animation:rcy 4.2s steps(1) infinite;animation-delay:calc(
 .nav button{width:54px;height:44px;border-radius:10px;border:1px solid #ded7c6;background:rgba(255,255,255,.85);font-size:20px;color:#14682C;cursor:pointer}
 @media (hover:hover) and (pointer:fine){.nav{opacity:.25}.nav:hover{opacity:1}}
 @media print{.nav{display:none}}</style>
-<style>.s.xhide{display:none!important}.offmsg{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;font:700 26px "Hiragino Sans","Yu Gothic",sans-serif;color:#232323;background:#F6F3EA;z-index:20}.offmsg a{font-size:20px;color:#14682C}</style>
+<style>.s.xhide{display:none!important}.s.xmark::before{content:"生徒には非表示のページ";position:absolute;left:8px;top:6px;z-index:5;background:#c62828;color:#fff;font:700 13px sans-serif;padding:3px 8px;border-radius:4px}.offmsg{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;font:700 26px "Hiragino Sans","Yu Gothic",sans-serif;color:#232323;background:#F6F3EA;z-index:20}.offmsg a{font-size:20px;color:#14682C}</style>
 <script id="cfgpre">(function(){var KEY='ichiji/06/',ROOT='../../',pv=/[?&]preview/.test(location.search),c;
 try{var x=new XMLHttpRequest();x.open('GET',ROOT+'config.json?t='+Date.now(),false);x.send();if(x.status!==200)return;c=JSON.parse(x.responseText)}catch(e){return}
 var d=null,u=null;(c.units||[]).forEach(function(un){if(un.path===KEY){d=un;u=un}(un.decks||[]).forEach(function(dk){if(un.path+dk.path===KEY){d=dk;u=un}})});
 if(!d)return;var ss=document.querySelectorAll('.s');
 if(!pv&&(d.show===false||u.show===false)){var m=document.createElement('div');m.className='offmsg';m.innerHTML='このスライドは現在公開されていません<a href="javascript:history.back()">もどる</a>';document.body.appendChild(m);return}
-(d.hide||[]).forEach(function(n){if(ss[n-1])ss[n-1].classList.add('xhide')});
+(d.hide||[]).forEach(function(n){if(ss[n-1])ss[n-1].classList.add(pv?'xmark':'xhide')});
 if(!document.querySelectorAll('.s:not(.xhide)').length&&ss[0])ss[0].classList.remove('xhide');
 })();</script>
 <div class="prog"></div><div class="hint">クリック・タップ・→ で進む ／ ← ・左端タップ・右スワイプで戻る ／ 帯の時間をクリックでタイマー</div>

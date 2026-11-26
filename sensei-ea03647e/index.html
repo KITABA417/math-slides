@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>先生用 全スライド</title>
+<link rel="stylesheet" href="../site.css">
+<style>h2{font-size:20px;margin:28px 0 4px}.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:4px;margin-left:8px;vertical-align:middle}.tag.off{background:#c62828;color:#fff}.tag.pg{background:#ffe08a;color:#232323}#list a.off{opacity:.75;border-style:dashed}</style>
+</head>
+<body><h1>先生用　全スライド</h1>
+<p class="note">非表示のスライド・ページも含めて、すべて見られます（非表示のページには赤い札が付きます）。このリンクは生徒に配らないでください。
+<a href="../admin.html">管理画面へ</a></p>
+<div id="list"><p class="note">読み込み中…</p></div>
+<script>
+function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+fetch('../config.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(c){
+  var h='',G=c.grades||[];
+  function card(href,t,s,off,hid){return '<a class="'+(off?'off':'')+'" href="'+esc(href)+'?preview" target="_blank">'+esc(t)+(off?'<span class="tag off">生徒に非表示</span>':'')+(hid?'<span class="tag pg">非表示ページ '+hid+'</span>':'')+(s?'<span>'+esc(s)+'</span>':'')+'</a>'}
+  var groups=G.map(function(g){return{id:g.id,title:g.title}}).concat([{id:'',title:'学年なし'}]);
+  groups.forEach(function(g){
+    var us=(c.units||[]).filter(function(u){return (u.grade||'')===g.id});if(!us.length)return;
+    h+='<h2>'+esc(g.id||g.title)+'</h2>';
+    us.forEach(function(u){
+      if(u.decks){h+='<p class="note" style="margin:10px 0 0;font-weight:700">'+esc(u.title)+(u.show===false?'<span class="tag off">単元ごと非表示</span>':'')+'</p>';
+        u.decks.forEach(function(d){h+=card('../'+u.path+d.path,d.title,d.sub,d.show===false||u.show===false,(d.hide||[]).length)})}
+      else h+=card('../'+u.path,u.title,u.sub,u.show===false,(u.hide||[]).length)})});
+  document.getElementById('list').innerHTML=h;
+}).catch(function(){document.getElementById('list').innerHTML='<p class="note">読み込めませんでした。再読み込みしてください。</p>'});
+</script>
+</body></html>
