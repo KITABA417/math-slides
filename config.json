@@ -75,20 +75,29 @@
      "title": "⑨ 3直線でできる三角形の面積（P168）",
      "sub": "",
      "show": true,
-     "hide": []
+     "hide": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+     ]
     },
     {
      "path": "10/",
      "title": "⑩ 面積を2等分する直線（P169〜171）",
      "sub": "",
-     "show": true,
+     "show": false,
      "hide": []
     },
     {
      "path": "11/",
      "title": "⑪ 正方形と文字 t（P171・172）",
      "sub": "",
-     "show": true,
+     "show": false,
      "hide": []
     }
    ],
