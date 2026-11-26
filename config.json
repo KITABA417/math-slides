@@ -111,6 +111,43 @@
    "show": true,
    "hide": [],
    "grade": "中3"
+  },
+  {
+   "path": "futoushiki/",
+   "title": "数学Ⅰ　1次不等式",
+   "sub": "不等式の性質 〜 1次不等式の活用（中3先取り）",
+   "show": true,
+   "grade": "中3",
+   "decks": [
+    {
+     "path": "01/",
+     "title": "① 不等式の性質（p.44〜47）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "02/",
+     "title": "② 1次不等式（p.48〜50）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "03/",
+     "title": "③ 連立不等式（p.50〜51）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "04/",
+     "title": "④ 1次不等式の活用（p.52）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    }
+   ]
   }
  ],
  "grades": [
