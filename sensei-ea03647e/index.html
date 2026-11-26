@@ -13,7 +13,7 @@
 function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 fetch('../config.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(c){
   var h='',G=c.grades||[];
-  function card(href,t,s,off,hid){return '<a class="'+(off?'off':'')+'" href="'+esc(href)+'?preview" target="_blank">'+esc(t)+(off?'<span class="tag off">生徒に非表示</span>':'')+(hid?'<span class="tag pg">非表示ページ '+hid+'</span>':'')+(s?'<span>'+esc(s)+'</span>':'')+'</a>'}
+  function card(href,t,s,off,hid){return '<a class="'+(off?'off':'')+'" href="'+esc(href)+'?preview&v='+Date.now()+'" target="_blank">'+esc(t)+(off?'<span class="tag off">生徒に非表示</span>':'')+(hid?'<span class="tag pg">非表示ページ '+hid+'</span>':'')+(s?'<span>'+esc(s)+'</span>':'')+'</a>'}
   var groups=G.map(function(g){return{id:g.id,title:g.title}}).concat([{id:'',title:'学年なし'}]);
   groups.forEach(function(g){
     var us=(c.units||[]).filter(function(u){return (u.grade||'')===g.id});if(!us.length)return;

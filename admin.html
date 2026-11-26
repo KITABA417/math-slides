@@ -96,7 +96,7 @@ function deckRow(list,idx,key,isUnitDeck){
   var pb=document.createElement('button');pb.className='sm';
   function pbText(){pb.textContent='ページ（'+(slides.length-d.hide.filter(function(n){return n<=slides.length}).length)+'/'+slides.length+'）'}
   pbText();ops.appendChild(pb);
-  var pv=document.createElement('a');pv.href=key+'?preview';pv.target='_blank';pv.rel='noopener';pv.textContent='確認';pv.className='sm';pv.style.alignSelf='center';ops.appendChild(pv);
+  var pv=document.createElement('a');pv.href=key+'?preview&v='+Date.now();pv.target='_blank';pv.rel='noopener';pv.textContent='確認';pv.className='sm';pv.style.alignSelf='center';ops.appendChild(pv);
   if(!isUnitDeck){
     var up=document.createElement('button');up.className='sm';up.textContent='↑';up.title='上へ';up.onclick=function(){if(idx>0){list.splice(idx-1,0,list.splice(idx,1)[0]);setDirty(true);render()}};
     var dn=document.createElement('button');dn.className='sm';dn.textContent='↓';dn.title='下へ';dn.onclick=function(){if(idx<list.length-1){list.splice(idx+1,0,list.splice(idx,1)[0]);setDirty(true);render()}};
