@@ -593,7 +593,7 @@ if(!document.querySelectorAll('.s:not(.xhide)').length&&ss[0])ss[0].classList.re
 <script>
 (function(){
 var all=/[?&]all/.test(location.search);if(all||matchMedia('print').matches)document.documentElement.classList.add('noanim');
-var slides=document.querySelectorAll('.s'),T=slides.length,prog=document.querySelector('.prog');
+var slides=document.querySelectorAll('.s:not(.xhide)'),T=slides.length,prog=document.querySelector('.prog');
 slides.forEach(function(s,j){var d=document.createElement('div');d.className='pn';d.textContent=String(j+1).padStart(2,'0')+' / '+String(T).padStart(2,'0');s.appendChild(d);
   var k=0;['.head','.hr'].forEach(function(q){var e=s.querySelector(q);if(e)e.style.setProperty('--i',k++)});
   s.querySelectorAll('.body>*').forEach(function(e){e.style.setProperty('--i',k++)});

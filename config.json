@@ -131,6 +131,59 @@
    "grade": "中3"
   },
   {
+   "path": "jissu/",
+   "title": "数学Ⅰ　実数",
+   "sub": "有理数・実数・絶対値（中3先取り）",
+   "show": true,
+   "grade": "中3",
+   "decks": [
+    {
+     "path": "01/",
+     "title": "① 有理数（p.29〜31）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "02/",
+     "title": "② 実数（p.32〜34）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "03/",
+     "title": "③ 絶対値（p.34〜35）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    }
+   ]
+  },
+  {
+   "path": "kongo/",
+   "title": "数学Ⅰ　根号を含む式の計算",
+   "sub": "平方根の計算・分母の有理化・式の値（中3先取り）",
+   "show": true,
+   "grade": "中3",
+   "decks": [
+    {
+     "path": "01/",
+     "title": "① 根号を含む式の計算（p.36〜39）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    },
+    {
+     "path": "02/",
+     "title": "② 分母の有理化・式の値（p.39〜41）",
+     "sub": "",
+     "show": true,
+     "hide": []
+    }
+   ]
+  },
+  {
    "path": "futoushiki/",
    "title": "数学Ⅰ　1次不等式",
    "sub": "不等式の性質 〜 1次不等式の活用（中3先取り）",
